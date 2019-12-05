@@ -36,3 +36,10 @@ To start please follow the following order
     > ship-with-insurance> mvn clean compile spring-boot:run
 4. `ship-without-insurance`
     > ship-without-insurance> mvn clean compile spring-boot:run
+                               
+# workflow
+
+Zeebe Modeler: A desktop modeling tool that we'll use to create and configure our workflow before we deploy it to Zeebe.
+
+https://github.com/zeebe-io/zeebe-modeler/releases
+                           

@@ -1,0 +1,21 @@
+package au.com.mayi.payment;
+
+import io.zeebe.client.ZeebeClient;
+import io.zeebe.client.api.worker.JobWorker;
+import io.zeebe.spring.client.EnableZeebeClient;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@Slf4j
+@SpringBootApplication
+@EnableZeebeClient
+@RequiredArgsConstructor
+public class ShipWithoutInsuranceApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(ShipWithoutInsuranceApplication.class, args);
+	}
+}

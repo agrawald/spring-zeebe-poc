@@ -61,7 +61,6 @@
     </dependencies>
 
     <modules>
-        <module>zeebe-commons</module>
         <module>initiate-payment</module>
         <module>order-process</module>
         <module>ship-with-insurance</module>

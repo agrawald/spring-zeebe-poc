@@ -10,7 +10,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @Slf4j
 @SpringBootApplication
 @EnableZeebeClient
-@ZeebeDeployment(classPathResource = "bpmn/order-process.bpmn")
+//@ZeebeDeployment(classPathResource = "bpmn/order-process.bpmn")
+@ZeebeDeployment(classPathResource = "bpmn/task-workflow.bpmn")
 @RequiredArgsConstructor
 public class OrderProcessApplication {
 

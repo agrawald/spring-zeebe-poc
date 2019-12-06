@@ -11,21 +11,21 @@ import java.util.Map;
 
 @Slf4j
 @RestController
-@RequestMapping("/order")
+@RequestMapping("/task")
 @RequiredArgsConstructor
-public class OrderProcessController {
+public class TaskWorflowController {
 	private final ZeebeClientLifecycle client;
 
-	@Value("order-process")
+	@Value("task-workflow")
 	private String processId;
 
 	@PostMapping("/submit")
 	@ResponseBody
-	public WorkflowInstanceEvent deploy(@RequestBody Map<String, Object> order) {
+	public WorkflowInstanceEvent submitTask(@RequestBody Map<String, Object> task) {
 		final WorkflowInstanceEvent wfInstance = client.newCreateInstanceCommand()
 				.bpmnProcessId(processId)
 				.latestVersion()
-				.variables(order)
+				.variables(task)
 				.send()
 				.join();
 		final long workflowInstanceKey = wfInstance.getWorkflowInstanceKey();
@@ -34,12 +34,13 @@ public class OrderProcessController {
 		return wfInstance;
 	}
 
-	@PutMapping("/{orderId}/payment")
+	@PutMapping("/{taskId}/{status}")
 	@ResponseBody
-	public String paymentReceived(@PathVariable("orderId") String correlationId) {
+	public String paymentReceived(@PathVariable("taskId") String correlationId, @PathVariable("status") String status) {
 		client.newPublishMessageCommand()
-				.messageName("payment-received")
+				.messageName("manual_approval")
 				.correlationKey(correlationId)
+				.variables("{\"status\": \""+status+"\"}")
 				.send()
 				.join();
 		return "Done";

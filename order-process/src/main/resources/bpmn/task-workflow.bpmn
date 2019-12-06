@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_0r7rw7d" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Zeebe Modeler" exporterVersion="0.7.0">
+  <bpmn:process id="task-workflow" name="Task Workflow" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1" name="Task Workflow Initiated">
+      <bpmn:outgoing>SequenceFlow_ST2CT</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:serviceTask id="ServiceTask_CT2" name="Create Task">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="create-task" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_ST2CT</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_CT2PG</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="SequenceFlow_ST2CT" sourceRef="StartEvent_1" targetRef="ServiceTask_CT2" />
+    <bpmn:exclusiveGateway id="ExclusiveGateway_AA4" name="Autoapprove?" default="SequenceFlow_AA2MA">
+      <bpmn:incoming>SequenceFlow_PG2AA</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_AA2MA</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_AA2UTS</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:intermediateCatchEvent id="IntermediateCatchEvent_MA5" name="Manual Approval">
+      <bpmn:incoming>SequenceFlow_AA2MA</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_MA2UTS</bpmn:outgoing>
+      <bpmn:messageEventDefinition messageRef="Message_0o52qoa" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_AA2MA" sourceRef="ExclusiveGateway_AA4" targetRef="IntermediateCatchEvent_MA5" />
+    <bpmn:serviceTask id="ServiceTask_UTS5" name="Update Task Status">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="update-task-status" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_AA2UTS</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_MA2UTS</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_UTN2SN</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="SequenceFlow_AA2UTS" name="= APPROVED" sourceRef="ExclusiveGateway_AA4" targetRef="ServiceTask_UTS5">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">status=="APPROVED"</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:serviceTask id="ServiceTask_SN4" name="Send Notification">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="send-notification" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_PG2SN</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_UTN2SN</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_SN2E</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="EndEvent_TWC6" name="Task Workflow Completed">
+      <bpmn:incoming>SequenceFlow_SN2E</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_SN2E" sourceRef="ServiceTask_SN4" targetRef="EndEvent_TWC6" />
+    <bpmn:sequenceFlow id="SequenceFlow_MA2UTS" sourceRef="IntermediateCatchEvent_MA5" targetRef="ServiceTask_UTS5" />
+    <bpmn:sequenceFlow id="SequenceFlow_CT2PG" sourceRef="ServiceTask_CT2" targetRef="ParallelGateway_3" />
+    <bpmn:sequenceFlow id="SequenceFlow_PG2AA" sourceRef="ParallelGateway_3" targetRef="ExclusiveGateway_AA4" />
+    <bpmn:parallelGateway id="ParallelGateway_3">
+      <bpmn:incoming>SequenceFlow_CT2PG</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_PG2AA</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_PG2SN</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:sequenceFlow id="SequenceFlow_PG2SN" sourceRef="ParallelGateway_3" targetRef="ServiceTask_SN4" />
+    <bpmn:sequenceFlow id="SequenceFlow_UTN2SN" sourceRef="ServiceTask_UTS5" targetRef="ServiceTask_SN4" />
+  </bpmn:process>
+  <bpmn:message id="Message_0o52qoa" name="manual_approval">
+    <bpmn:extensionElements>
+      <zeebe:subscription correlationKey="taskId" />
+    </bpmn:extensionElements>
+  </bpmn:message>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="task-workflow">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="192" y="239" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="174" y="276" width="71" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ServiceTask_1xblb9m_di" bpmnElement="ServiceTask_CT2">
+        <dc:Bounds x="160" y="60" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0i50qel_di" bpmnElement="SequenceFlow_ST2CT">
+        <di:waypoint x="210" y="239" />
+        <di:waypoint x="210" y="140" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ExclusiveGateway_0zb305v_di" bpmnElement="ExclusiveGateway_AA4" isMarkerVisible="true">
+        <dc:Bounds x="395" y="232" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="335" y="273" width="69" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="IntermediateCatchEvent_13peebv_di" bpmnElement="IntermediateCatchEvent_MA5">
+        <dc:Bounds x="642" y="382" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="618" y="423" width="83" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0fy529i_di" bpmnElement="SequenceFlow_AA2MA">
+        <di:waypoint x="420" y="282" />
+        <di:waypoint x="420" y="400" />
+        <di:waypoint x="642" y="400" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ServiceTask_035j3kb_di" bpmnElement="ServiceTask_UTS5">
+        <dc:Bounds x="610" y="217" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1r1buqm_di" bpmnElement="SequenceFlow_AA2UTS">
+        <di:waypoint x="445" y="257" />
+        <di:waypoint x="610" y="257" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="495" y="233" width="71" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ServiceTask_0lqyr5b_di" bpmnElement="ServiceTask_SN4">
+        <dc:Bounds x="610" y="60" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_1vie4pb_di" bpmnElement="EndEvent_TWC6">
+        <dc:Bounds x="842" y="82" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="824" y="126" width="71" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1gmmmmk_di" bpmnElement="SequenceFlow_SN2E">
+        <di:waypoint x="710" y="100" />
+        <di:waypoint x="842" y="100" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_04f5dt8_di" bpmnElement="SequenceFlow_MA2UTS">
+        <di:waypoint x="660" y="382" />
+        <di:waypoint x="660" y="297" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0irt8k5_di" bpmnElement="SequenceFlow_CT2PG">
+        <di:waypoint x="260" y="100" />
+        <di:waypoint x="395" y="100" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0nta77b_di" bpmnElement="SequenceFlow_PG2AA">
+        <di:waypoint x="420" y="125" />
+        <di:waypoint x="420" y="232" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ParallelGateway_11eavxn_di" bpmnElement="ParallelGateway_3">
+        <dc:Bounds x="395" y="75" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1vmfv2y_di" bpmnElement="SequenceFlow_PG2SN">
+        <di:waypoint x="445" y="100" />
+        <di:waypoint x="610" y="100" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1rbnvsx_di" bpmnElement="SequenceFlow_UTN2SN">
+        <di:waypoint x="660" y="217" />
+        <di:waypoint x="660" y="140" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

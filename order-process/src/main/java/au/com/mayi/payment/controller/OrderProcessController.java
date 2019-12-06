@@ -2,6 +2,7 @@ package au.com.mayi.payment.controller;
 
 import io.zeebe.client.api.response.WorkflowInstanceEvent;
 import io.zeebe.spring.client.ZeebeClientLifecycle;
+import io.zeebe.spring.client.annotation.ZeebeDeployment;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,6 +14,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/order")
 @RequiredArgsConstructor
+@ZeebeDeployment(classPathResource = "bpmn/order-process.bpmn")
 public class OrderProcessController {
 	private final ZeebeClientLifecycle client;
 
